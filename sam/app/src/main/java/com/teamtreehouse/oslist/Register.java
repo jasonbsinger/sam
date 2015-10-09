@@ -67,7 +67,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                 } else {
                     userLocalStorage.storeUserData(returnedUser);
                     userLocalStorage.setLoggedInStatus(true);
-                    startActivity(new Intent(Register.this, MainActivity.class));
+                    startActivity(new Intent(Register.this, Map.class));
                 }
             }
         });
@@ -76,7 +76,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
     private void showErrorMesssage() {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(Register.this);
-        dialogBuilder.setMessage("That username already exists.");
+        dialogBuilder.setMessage("That username already exists. Please use another one.");
         dialogBuilder.setPositiveButton("OK", null);
         dialogBuilder.show();
     }
