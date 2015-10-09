@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         if (!authenticate()) {
-            startActivity(new Intent(MainActivity.this, Login.class));
+            startActivity(new Intent(MainActivity.this, Register.class));
         }
     }
 

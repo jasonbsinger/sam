@@ -248,11 +248,6 @@ public class ServerRequests {
                 e.printStackTrace();
             }
 
-
-            /*System.out.println("\n-------------------      pathContent    ------------\n");
-            System.out.println(pathContent);
-            System.out.println("\n-------------------      pathContent    ------------\n");*/
-
             try {
                 return new JSONObject(pathContent);
             } catch (JSONException e) {

@@ -40,10 +40,9 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 String password = etPassword.getText().toString();
                 User user = new User(username, password);
                 authenticate(user);
-                //logUserIn(user);
                 break;
             case R.id.tvRegsiterLink:
-                startActivity(new Intent(this, Register.class));
+                startActivity(new Intent(Login.this, Register.class));
                 break;
         }
     }
