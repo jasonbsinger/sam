@@ -67,7 +67,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                 } else {
                     userLocalStorage.storeUserData(returnedUser);
                     userLocalStorage.setLoggedInStatus(true);
-                    startActivity(new Intent(Register.this, Map.class));
+                    startActivity(new Intent(Register.this, MainActivity.class));
                 }
             }
         });

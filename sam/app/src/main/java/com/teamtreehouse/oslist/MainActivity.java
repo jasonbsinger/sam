@@ -201,16 +201,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fab_directions.hide();
         switch (position) {
             case 0:
-                //this.onResume();
+                this.onResume();
                 startActivity(new Intent(MainActivity.this, MainActivity.class));
                 fab_directions.show();
                 break;
             case 1:
-                //this.onPause();
+                this.onPause();
                 fragment = new InventoryFragment();
                 break;
             case 2:
-                //this.onPause();
+                this.onPause();
                 fragment = new ItemFragment();
                 break;
             default:

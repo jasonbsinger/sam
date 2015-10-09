@@ -71,7 +71,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     private void logUserIn(User returnedUser) {
         userLocalStorage.storeUserData(returnedUser);
         userLocalStorage.setLoggedInStatus(true);
-        startActivity(new Intent(Login.this, Map.class));
+        startActivity(new Intent(Login.this, MainActivity.class));
     }
 
 }
