@@ -1,10 +1,11 @@
 package com.teamtreehouse.oslist;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,8 +15,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
+    UserLocalStorage userLocalStorage;
     private ListView mDrawerList;
     private DrawerLayout mDrawerLayout;
     private ArrayAdapter<String> mAdapter;
@@ -30,6 +32,8 @@ public class MainActivity extends ActionBarActivity {
         mDrawerList = (ListView) findViewById(R.id.navList);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mActivityTitle = getTitle().toString();
+
+        userLocalStorage = new UserLocalStorage(this);
 
         addDrawerItems();
         setupDrawer();
@@ -106,5 +110,17 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!authenticate()) {
+            startActivity(new Intent(MainActivity.this, Login.class));
+        }
+    }
+
+    private boolean authenticate() {
+        return userLocalStorage.isLoggedIn();
     }
 }
