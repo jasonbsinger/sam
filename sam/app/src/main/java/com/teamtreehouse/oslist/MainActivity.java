@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static String GMS_SEARCH_ACTION = "com.google.android.gms.actions.SEARCH_ACTION";
     RelativeLayout root;
     UserLocalStorage userLocalStorage;
-    FloatingActionButton fab_directions, fab_location;
+    FloatingActionButton fab_directions;
     HashMap<String, String> listOfDirections = new HashMap<>();
     String instructions = "";
     boolean isBottom = false;
@@ -89,8 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         root = (RelativeLayout) findViewById(R.id.root);
 
-        //fab_directions = (FloatingActionButton) findViewById(R.id.fab_directions);
-        //fab_location = (FloatingActionButton) findViewById(R.id.fab_location);
+        fab_directions = (FloatingActionButton) findViewById(R.id.fab_directions);
 
         //tv_directions = (TextView)findViewById(R.id.tv_directions);
 
@@ -112,8 +111,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         instructions = "Please search for a place first";
 
 
-        //fab_directions.setOnClickListener(this);
-        //fab_location.setOnClickListener(this);
+        fab_directions.setOnClickListener(this);
         onNewIntent(getIntent());
     }
 
@@ -142,8 +140,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (!authenticate()) {
             startActivity(new Intent(MainActivity.this, Login.class));
         } else {
-            //onNewIntent(getIntent());
-
             if (userLocalStorage.isInstructionClicked()) {
                 boolean coords = userLocalStorage.isInstructionCoords();
 
@@ -162,7 +158,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        //setUpMapIfNeeded();
     }
 
     private boolean authenticate() {
@@ -206,14 +201,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fab_directions.hide();
         switch (position) {
             case 0:
+                //this.onResume();
                 startActivity(new Intent(MainActivity.this, MainActivity.class));
                 fab_directions.show();
                 break;
             case 1:
-                //fragment = new InventoryFragment();
+                //this.onPause();
+                fragment = new InventoryFragment();
                 break;
             case 2:
-                //fragment = new ItemFragment();
+                //this.onPause();
+                fragment = new ItemFragment();
                 break;
             default:
                 break;
@@ -757,8 +755,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mMap.setMyLocationEnabled(true);
                 //mMap.getMyLocation();
                 break;*/
-            // case R.id.fab_directions:
-            //   Toast.makeText(MainActivity.this, instructions, Toast.LENGTH_LONG).show();
+            case R.id.fab_directions:
+                Toast.makeText(MainActivity.this, instructions, Toast.LENGTH_LONG).show();
                 /*if (isBottom) {
                     SlideUp();
                     isBottom = false;
@@ -768,7 +766,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     isBottom = true;
                 }*/
             //tv_directions.setText(userLocalStorage.getDirections());
-            // break;
+                break;
         }
     }
 }
