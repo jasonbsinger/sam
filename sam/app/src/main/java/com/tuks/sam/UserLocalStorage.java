@@ -1,4 +1,4 @@
-package com.teamtreehouse.oslist;
+package com.tuks.sam;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -64,7 +64,7 @@ public class UserLocalStorage {
         spEditor.commit();
     }
 
-    public void setNewLocation(String location, String longitude, String latitude) {
+    public void setNewLocation(String location, String latitude, String longitude) {
         SharedPreferences.Editor spEditor = userLocalDatabase.edit();
         spEditor.putString("instructionLongitude", longitude);
         spEditor.putString("instructionLatitude", latitude);

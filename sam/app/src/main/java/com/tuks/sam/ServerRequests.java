@@ -1,4 +1,4 @@
-package com.teamtreehouse.oslist;
+package com.tuks.sam;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -118,12 +118,15 @@ public class ServerRequests {
 
             try {
 
-                //System.out.println("\n\nTest\n\n" + post.toString() + "\n\n");
+                System.out.println("\n\nTest1\n\n" + post.toString() + "\n\n");
                 post.setEntity(new UrlEncodedFormEntity(dataToSend));
-                //System.out.println("\n\nTest\n\n" + post.toString() + "\n\n");
+                System.out.println("\n\nTest2\n\n" + post.toString() + "\n\n");
 
                 client.execute(post);
+                System.out.println("\n\nTest3\n\n" + post.toString() + "\n\n");
+
             } catch (Exception e) {
+                System.out.print("In Catch Statement: ");
                 e.printStackTrace();
             }
             return null;

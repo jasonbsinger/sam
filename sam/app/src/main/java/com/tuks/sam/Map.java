@@ -1,4 +1,4 @@
-package com.teamtreehouse.oslist;
+package com.tuks.sam;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

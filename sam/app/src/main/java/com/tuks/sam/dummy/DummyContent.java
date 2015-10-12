@@ -1,4 +1,4 @@
-package com.teamtreehouse.oslist.dummy;
+package com.tuks.sam.dummy;
 
 import java.util.ArrayList;
 import java.util.HashMap;

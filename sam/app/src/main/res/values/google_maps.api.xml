@@ -1,4 +1,4 @@
 <resources>
-    <!-- https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=40:63:21:54:37:9D:6D:C4:65:C6:87:2C:FF:D2:F8:24:83:D3:EF:F8%3Bcom.teamtreehouse.oslist -->
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyCDI27OZFMOt5BrE4YISjbwwONjD4lD_9E</string>
+    <!-- https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=40:63:21:54:37:9D:6D:C4:65:C6:87:2C:FF:D2:F8:24:83:D3:EF:F8%3Bcom.tuks.sam -->
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyCNxwNKYbTRYHEae5JRg1W_PItox6UJ2JI</string>
 </resources>

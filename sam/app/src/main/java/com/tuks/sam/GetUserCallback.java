@@ -1,4 +1,4 @@
-package com.teamtreehouse.oslist;
+package com.tuks.sam;
 
 interface GetUserCallback {
     void done(User returnedUser);

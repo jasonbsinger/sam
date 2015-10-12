@@ -1,4 +1,4 @@
-package com.teamtreehouse.oslist;
+package com.tuks.sam;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

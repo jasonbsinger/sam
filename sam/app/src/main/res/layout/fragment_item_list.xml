@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#eeeeee"
-    tools:context="com.teamtreehouse.oslist.ItemFragment">
+    tools:context="com.tuks.sam.ItemFragment">
 
     <ListView
         android:id="@android:id/list"

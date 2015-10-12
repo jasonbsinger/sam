@@ -1,4 +1,4 @@
-package com.teamtreehouse.oslist;
+package com.tuks.sam;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -14,6 +14,7 @@ import android.graphics.Point;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.DrawerLayout;
@@ -38,6 +39,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -55,6 +57,7 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final double EARTH_RADIUS = 6378100.0;
     private static String GMS_SEARCH_ACTION = "com.google.android.gms.actions.SEARCH_ACTION";
+    protected LocationListener locationListener;
     RelativeLayout root;
     UserLocalStorage userLocalStorage;
     FloatingActionButton fab_directions;
@@ -69,11 +72,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String mActivityTitle;
     private TextView tv_directions;
     private GoogleMap mMap;
-
+    private Location myCurrentLocation;
+    private Marker mMarker;
     /*private ActionBar getActionBar() {
         return ((AppCompatActivity) getActivity()).getSupportActionBar();
     }*/
     private int offset;
+    private GoogleMap.OnMyLocationChangeListener myLocationChangeListener = new GoogleMap.OnMyLocationChangeListener() {
+        @Override
+        public void onMyLocationChange(Location location) {
+            LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
+            setMyLocation(loc.latitude, loc.longitude);
+            //System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            //System.out.println("My Location = "+getMyLocation().getLatitude()+", "+getMyLocation().getLongitude());
+            //System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            mMarker = mMap.addMarker(new MarkerOptions().position(loc));
+            if (mMap != null) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 16.0f));
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         userLocalStorage = new UserLocalStorage(this);
-        //userLocalStorage.setLoggedInStatus(false);
 
         mDrawerList = (ListView) findViewById(R.id.navList);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -90,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         root = (RelativeLayout) findViewById(R.id.root);
 
         fab_directions = (FloatingActionButton) findViewById(R.id.fab_directions);
+        //setMyLocation(-25.755755,28.231209);
 
         //tv_directions = (TextView)findViewById(R.id.tv_directions);
 
@@ -106,12 +124,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mMap.getUiSettings().setZoomControlsEnabled(false);
         mMap.getUiSettings().setCompassEnabled(false);
         mMap.getUiSettings().setMapToolbarEnabled(false);
-
+        mMap.setMyLocationEnabled(true);
+        mMap.clear();
 
         instructions = "Please search for a place first";
 
 
         fab_directions.setOnClickListener(this);
+        mMap.setOnMyLocationChangeListener(myLocationChangeListener);
         onNewIntent(getIntent());
     }
 
@@ -126,11 +146,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (action.equals(Intent.ACTION_SEARCH) || action.equals(GMS_SEARCH_ACTION)) {
                 mQuery = intent.getStringExtra(SearchManager.QUERY);
                 //mQuery = intent.getStringExtra(SearchManager.QUERY);
-                System.out.println("Bubbles = " + mQuery);
+                // System.out.println("Bubbles = " + mQuery);
                 setupDirectionSearch(mQuery);
-            } else {
-                System.out.print("Not aciton serach");
-            }
+            }// else {
+            //System.out.print("Not aciton serach");
+            //}
         }
     }
 
@@ -138,20 +158,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onStart() {
         super.onStart();
         if (!authenticate()) {
-            startActivity(new Intent(MainActivity.this, Login.class));
+            startActivity(new Intent(MainActivity.this, Register.class));
         } else {
+            // mMap.setOnMyLocationChangeListener(myLocationChangeListener);
             if (userLocalStorage.isInstructionClicked()) {
                 boolean coords = userLocalStorage.isInstructionCoords();
 
-                userLocalStorage.setInstructionCoords(false);
+                //userLocalStorage.setInstructionCoords(false);
                 userLocalStorage.setInstructionClicked(false);
 
-                if (coords) {
-                    setupDirectionSearch(userLocalStorage.getInstructionLocation(), coords, Double.parseDouble(userLocalStorage.getInstructionLocationLongitude()), Double.parseDouble(userLocalStorage.getInstructionLocationLatitude()));
-                } else {
-                    setupDirectionSearch(userLocalStorage.getInstructionLocation(), coords, 0, 0);
-                }
+                // if (coords) {
+                //     setupDirectionSearch(userLocalStorage.getInstructionLocation(), coords, Double.parseDouble(userLocalStorage.getInstructionLocationLongitude()), Double.parseDouble(userLocalStorage.getInstructionLocationLatitude()));
+                // } else {
+                setupDirectionSearch(userLocalStorage.getInstructionLocation(), coords, 0, 0);
+                //  }
             }
+
+            // mMap.setOnMyLocationChangeListener(null);
         }
     }
 
@@ -165,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void addDrawerItems() {
-        String[] osArray = {"Map", "Inventory", "Scavenger Hunt", "Send Feedback"};
+        String[] osArray = {"Map", "Inventory", "Scavenger Hunt"};
         mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
         mDrawerList.setAdapter(mAdapter);
 
@@ -185,9 +208,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     case 2:
                         Toast.makeText(MainActivity.this, "Scavenger Hunt!", Toast.LENGTH_SHORT).show();
                         break;
-                    case 3:
-                        Toast.makeText(MainActivity.this, "Send Feedback", Toast.LENGTH_SHORT).show();
-                        break;
                     default:
                         Toast.makeText(MainActivity.this, "Not Implimented Yet!", Toast.LENGTH_SHORT).show();
                         break;
@@ -201,16 +221,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fab_directions.hide();
         switch (position) {
             case 0:
-                this.onResume();
+                MainActivity.this.onResume();
                 startActivity(new Intent(MainActivity.this, MainActivity.class));
                 fab_directions.show();
                 break;
             case 1:
-                this.onPause();
+                MainActivity.this.onPause();
                 fragment = new InventoryFragment();
                 break;
             case 2:
-                this.onPause();
+                MainActivity.this.onPause();
                 fragment = new ItemFragment();
                 break;
             default:
@@ -352,18 +372,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void setupDirectionSearch(String location, boolean coords, double longitude, double latitude) {
-        mMap.clear();
-        System.out.println("location = " + location + "\nLongitude = " + longitude + "\nLatitude = " + latitude);
 
-        //EditText input = (EditText) findViewById(R.id.editText);
-        List<Address> addressList = null;
-        userLocalStorage.addDirections("");
-        if (location != null || !location.equals("")) {
+        EditText input = (EditText) findViewById(R.id.editText);
+        input.setText(location);
+        // mMap.clear();
+        //System.out.println("location = " + location + "\nLongitude = " + longitude + "\nLatitude = " + latitude);
+
+        // mMap.setOnMyLocationChangeListener(myLocationChangeListener);
+        // EditText input = (EditText) findViewById(R.id.editText);
+        // input.setText(location);
+
+        // List<Address> addressList = null;
+        //userLocalStorage.addDirections("");
+       /* if (location != null || !location.equals("")) {
             Geocoder geocoder = new Geocoder(this);
             try {
                 location += ",Pretoria,Gauteng 0083,South Africa";
                 if (coords) {
-                    addressList = geocoder.getFromLocation(longitude, latitude, 1);
+                    addressList = geocoder.getFromLocation(latitude, longitude, 1);
                 } else {
                     addressList = geocoder.getFromLocationName(location, 1);
                 }
@@ -371,41 +397,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 e.printStackTrace();
             }
 
-            Address address = addressList.get(0);
-            LatLng origin = new LatLng(getMyLocation().getLatitude(), getMyLocation().getLongitude());
-            mMap.addMarker(new MarkerOptions().position(origin).title("You are here."));
+            Address address = addressList.get(0);*/
 
-            LatLng destination = new LatLng(address.getLatitude(), address.getLongitude());
-            MarkerOptions marker = new MarkerOptions().position(destination).title("X marks the spot");
-            //LevelListDrawable drawer = (LevelListDrawable) getResources().getDrawable(R.drawable.x);
-            // BitmapDrawable img = (BitmapDrawable) drawer.getCurrent();
-            // Bitmap x_marker = Bitmap.createScaledBitmap(img.getBitmap(), img.getBitmap().getWidth()/2, img.getBitmap().getHeight()/2, false);
-            marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.x_small));
-            marker.draggable(true);
+        //System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        //System.out.println("My Location in setupDirectionSearch 1 = "+mMarker.getPosition().latitude+", "+mMarker.getPosition().longitude);
+        // System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        //LatLng origin = new LatLng(getMyLocation().getLatitude(), getMyLocation().getLongitude());
+        ///mMarker.setPosition(origin);
+        //mMarker.setTitle("setupDirectionSearch");
+        //mMap.addMarker(new MarkerOptions().position(origin).title("setupDirectionSearch 1"));
+        //mMap.addMarker(mMarker);
 
-            mMap.addMarker(marker);
+        // LatLng destination = new LatLng(address.getLatitude(), address.getLongitude());
+        // MarkerOptions marker = new MarkerOptions().position(destination).title("X - "+location);
+        // marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.x_small));
+        //marker.draggable(true);
+
+        //mMap.addMarker(marker);
 
 
-            //mMap.addMarker(new MarkerOptions().position(destination).title("Destination"));
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(destination, 17));
+        //mMap.addMarker(new MarkerOptions().position(destination).title("Destination"));
+        // mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(destination, 17));
 
 
-            System.out.println("\n--------------------------------------------------\n");
+
+           /* System.out.println("\n--------------------------------------------------\n");
             System.out.println(getDirectionsUrl(origin, destination));
-            System.out.println("\n--------------------------------------------------\n");
-        } else {
-            Toast.makeText(this, "Location not found!", Toast.LENGTH_SHORT).show();
-        }
+            System.out.println("\n--------------------------------------------------\n");*/
+        // } else {
+        //    Toast.makeText(this, "Location not found!", Toast.LENGTH_SHORT).show();
+        //}
 
         getCongestion();
-        //input.setText("");
+        //mMap.setOnMyLocationChangeListener(null);
+        Toast.makeText(this, "Please press search to get directions", Toast.LENGTH_SHORT).show();
     }
 
     public void setupDirectionSearch(String location) {
+        // mMap.setOnMyLocationChangeListener(myLocationChangeListener);
         mMap.clear();
-
         EditText input = (EditText) findViewById(R.id.editText);
-        List<Address> addressList = null;
+
+        input.setText(location);
+
+        /*List<Address> addressList = null;
         userLocalStorage.addDirections("");
         if (location != null || !location.equals("")) {
             Geocoder geocoder = new Geocoder(this);
@@ -419,13 +454,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
 
             Address address = addressList.get(0);
+
+            //System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+           // System.out.println("My Location in setupDirectionSearch 2 = "+getMyLocation().getLatitude()+", "+getMyLocation().getLongitude());
+           // System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
             LatLng origin = new LatLng(getMyLocation().getLatitude(), getMyLocation().getLongitude());
-            mMap.addMarker(new MarkerOptions().position(origin).title("You are here."));
+            mMap.addMarker(new MarkerOptions().position(origin).title("Me"));
 
             LatLng destination = new LatLng(address.getLatitude(), address.getLongitude());
             MarkerOptions marker = new MarkerOptions().position(destination).title("X marks the spot");
             marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.x_small));
-            marker.draggable(true);
+            marker.draggable(false);
 
             mMap.addMarker(marker);
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(destination, 17));
@@ -434,10 +474,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             System.out.println(getDirectionsUrl(origin, destination));
             System.out.println("\n--------------------------------------------------\n");
 
+            input.setText(location);
         } else {
             Toast.makeText(this, "Location not found!", Toast.LENGTH_SHORT).show();
-        }
+        }*/
+
         getCongestion();
+        Toast.makeText(this, "Please press search to get directions", Toast.LENGTH_SHORT).show();
     }
 
     public void onSearch(View view) {
@@ -451,8 +494,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (location != null || !location.equals("")) {
             Geocoder geocoder = new Geocoder(this);
             try {
-                location += ",Pretoria,Gauteng 0083,South Africa";
-                addressList = geocoder.getFromLocationName(location, 1);
+                if (!userLocalStorage.isInstructionCoords()) {
+                    location += ",Pretoria,Gauteng 0083,South Africa";
+                    addressList = geocoder.getFromLocationName(location, 1);
+                } else {
+                    //double lat = Double.parseDouble(userLocalStorage.getInstructionLocationLatitude());
+                    //double lng =  Double.parseDouble(userLocalStorage.getInstructionLocationLongitude());
+
+                    location += "University Rd, Pretoria, 0132";
+                    addressList = geocoder.getFromLocationName(location, 1);
+                    userLocalStorage.setInstructionCoords(false);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -460,27 +512,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Address address = addressList.get(0);
 
             LatLng origin = new LatLng(getMyLocation().getLatitude(), getMyLocation().getLongitude());
-            mMap.addMarker(new MarkerOptions().position(origin).title("You are here."));
+            mMap.addMarker(new MarkerOptions().position(origin).title("onSearch"));
 
             LatLng destination = new LatLng(address.getLatitude(), address.getLongitude());
-            MarkerOptions marker = new MarkerOptions().position(destination).title("X marks the spot");
+            MarkerOptions marker = new MarkerOptions().position(destination).title("X -" + location);
             marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.x_small));
-            marker.draggable(true);
+            marker.draggable(false);
 
             mMap.addMarker(marker);
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(destination, 17));
 
 
+            mMap.setOnMyLocationChangeListener(null);
             System.out.println("\n--------------------------------------------------\n");
             System.out.println(getDirectionsUrl(origin, destination));
             System.out.println("\n--------------------------------------------------\n");
 
 
-        } else {
+        } /*else {
             Toast.makeText(this, "Location not found!", Toast.LENGTH_SHORT).show();
-        }
+        }*/
 
-        getCongestion();
+        //getCongestion();
         //input.setText("");
     }
 
@@ -526,27 +579,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void setUpMap() {
-        //LatLng latlng = new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude());
-        LatLng latlng = new LatLng(-25.755755, 28.231209);
-        mMap.addMarker(new MarkerOptions().position(latlng).title("You Are Here"));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 17));
+        if (mMarker != null) {
+            setMyLocation(mMarker.getPosition().latitude, mMarker.getPosition().longitude);
+            LatLng destination = new LatLng(getMyLocation().getLatitude(), getMyLocation().getLongitude());
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(destination, 17));
+        }//else{
+        // setMyLocation(-25.755755,28.231209);
+        // Toast.makeText(getApplicationContext(), "Problem getting current location",
+        //         Toast.LENGTH_SHORT).show();
+        setMyLocation(-25.755755, 28.231209);
+        //}
 
-        //LatLngBounds bounds = boundsWithCenterAndLatLngDistance(new LatLng(51.0, 19.0), 1000, 2000);
-        //mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
-
-        //mMap.setMyLocationEnabled(true);
+        //
 
     }
 
-    private Location getMyLocation() {
-        LatLng latlng = new LatLng(-25.755755, 28.231209);
-        mMap.setMyLocationEnabled(true);
-        Location location = new Location("My Position");
-        location.setLatitude(-25.755755);
-        location.setLongitude(28.231209);
+    public void setMyLocation(double latitude, double longitude) {
+        myCurrentLocation = new Location("Me");
+        myCurrentLocation.setLatitude(latitude);
+        myCurrentLocation.setLongitude(longitude);
+    }
 
-        //location =  mMap.getMyLocation();
-        return location;
+    public Location getMyLocation() {
+        /*if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            // Creating a criteria object to retrieve provider
+            Criteria criteria = new Criteria();
+            String provider = locationManager.getBestProvider(criteria, true);
+            Location location = locationManager.getLastKnownLocation(provider);
+
+            setMyLocation(location.getLatitude(), location.getLongitude());
+
+        } else {
+            // Show rationale and request permission.
+        }*/
+        /*if(myCurrentLocation == null){
+            setUpMap();
+        }*/
+
+
+        return myCurrentLocation;
     }
 
     private String getDirectionsUrl(LatLng origin, LatLng dest) {
@@ -765,7 +839,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     SlideDown();
                     isBottom = true;
                 }*/
-            //tv_directions.setText(userLocalStorage.getDirections());
+                //tv_directions.setText(userLocalStorage.getDirections());
                 break;
         }
     }
